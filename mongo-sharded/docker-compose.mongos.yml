@@ -9,12 +9,13 @@ services:
     command: mongos --config /etc/mongod.conf
     entrypoint: ["bash", "/docker-entrypoint.sh"]
     environment:
+      - MONGO_PORT=${MONGOS_PORT:-27017}
       - MONGO_USERNAME
       - MONGO_PASSWORD
       - MONGO_DATABASE
       - MONGO_SHARDS=shard/shard-1:27017,shard/shard-2:27017,shard/shard-3:27017
     ports:
-      - "27017:27017"
+      - "${MONGO_PORT:-27017}:27017"
     volumes:
       - ./scripts/docker-entrypoint.sh:/docker-entrypoint.sh
       - ./conf.d/mongod.mongos.conf:/etc/mongod.conf
