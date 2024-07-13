@@ -25,3 +25,109 @@ services:
       timeout: 5s
       retries: 3
       start_period: 30s
+
+  config:
+    extends:
+      service: mongodb
+    command: mongod --replSet config --config /etc/mongod.conf
+    volumes:
+      - ./conf.d/mongod.config.conf:/etc/mongod.conf
+
+  config-1:
+    extends:
+      service: config
+    container_name: config-1
+    environment:
+      - REPLICA_ID=config
+      - REPLICA_CONFIG=true
+      - REPLICA_MEMBERS=config-1:27017,config-2:27017,config-3:27017
+    volumes:
+      - config-1:/data/db
+      - ./scripts/healthcheck.sh:/healthcheck.sh
+    healthcheck:
+      test: ["CMD", "bash", "/healthcheck.sh"]
+      interval: 5s
+      retries: 10
+    depends_on:
+      config-2: { condition: service_healthy }
+      config-3: { condition: service_healthy }
+
+  config-2:
+    extends:
+      service: config
+    container_name: config-2
+    volumes:
+      - config-2:/data/db
+
+  config-3:
+    extends:
+      service: config
+    container_name: config-3
+    volumes:
+      - config-3:/data/db
+
+  shard:
+    extends:
+      service: mongodb
+    command: mongod --replSet shard --config /etc/mongod.conf
+    volumes:
+      - ./conf.d/mongod.shard.conf:/etc/mongod.conf
+
+  shard-1:
+    extends:
+      service: shard
+    container_name: shard-1
+    environment:
+      - REPLICA_ID=shard
+      - REPLICA_CONFIG=false
+      - REPLICA_MEMBERS=shard-1:27017,shard-2:27017,shard-3:27017
+    volumes:
+      - shard-1:/data/db
+      - ./scripts/healthcheck.sh:/healthcheck.sh
+    healthcheck:
+      test: ["CMD", "bash", "/healthcheck.sh"]
+      interval: 5s
+      retries: 10
+    depends_on:
+      shard-2: { condition: service_healthy }
+      shard-3: { condition: service_healthy }
+
+  shard-2:
+    extends:
+      service: shard
+    container_name: shard-2
+    volumes:
+      - shard-2:/data/db
+
+  shard-3:
+    extends:
+      service: shard
+    container_name: shard-3
+    volumes:
+      - shard-3:/data/db
+
+  mongos:
+    extends:
+      file: docker-compose.yml
+      service: mongodb
+    container_name: mongos
+    command: mongos --config /etc/mongod.conf
+    entrypoint: ["bash", "/docker-entrypoint.sh"]
+    environment:
+      - MONGO_PORT=${MONGOS_PORT:-27017}
+      - MONGO_USERNAME
+      - MONGO_PASSWORD
+      - MONGO_DATABASE
+      - MONGO_SHARDS=shard/shard-1:27017,shard/shard-2:27017,shard/shard-3:27017
+    ports:
+      - "${MONGO_PORT:-27017}:27017"
+    volumes:
+      - ./scripts/docker-entrypoint.sh:/docker-entrypoint.sh
+      - ./conf.d/mongod.mongos.conf:/etc/mongod.conf
+    depends_on:
+      config-1: { condition: service_healthy }
+      config-2: { condition: service_healthy }
+      config-3: { condition: service_healthy }
+      shard-1: { condition: service_healthy }
+      shard-2: { condition: service_healthy }
+      shard-3: { condition: service_healthy }
