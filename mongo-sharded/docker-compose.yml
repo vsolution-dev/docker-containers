@@ -114,7 +114,7 @@ services:
     command: mongos --config /etc/mongod.conf
     entrypoint: ["bash", "/entrypoint.sh"]
     environment:
-      - MONGO_PORT=${MONGOS_PORT:-27017}
+      - MONGO_PORT=${MONGO_PORT:-27017}
       - MONGO_USERNAME
       - MONGO_PASSWORD
       - MONGO_DATABASE
