@@ -1,8 +1,8 @@
 #!/bin/bash
 set -e
 
-source ./kibana.sh
-source ./elasticsearch.sh
+source ./scripts/kibana.sh
+source ./scripts/elasticsearch.sh
 
 wait_for_elasticsearch
 

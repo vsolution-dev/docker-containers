@@ -112,7 +112,7 @@ services:
       service: mongodb
     container_name: mongos
     command: mongos --config /etc/mongod.conf
-    entrypoint: ["bash", "/entrypoint.sh"]
+    entrypoint: ["bash", "/docker-entrypoint.sh"]
     environment:
       - MONGO_PORT=${MONGO_PORT:-27017}
       - MONGO_USERNAME
@@ -122,7 +122,7 @@ services:
     ports:
       - "${MONGO_PORT:-27017}:27017"
     volumes:
-      - ./scripts/entrypoint.sh:/entrypoint.sh
+      - ./docker-entrypoint.sh:/docker-entrypoint.sh
       - ./conf.d/mongod.mongos.conf:/etc/mongod.conf
     depends_on:
       config-1: { condition: service_healthy }

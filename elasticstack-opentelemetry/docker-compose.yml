@@ -12,6 +12,7 @@ services:
     container_name: bootstrap
     image: bootstrap
     network_mode: host
+    restart: no
     environment:
       - ELASTICSEARCH_HOST
       - ELASTIC_PASSWORD
