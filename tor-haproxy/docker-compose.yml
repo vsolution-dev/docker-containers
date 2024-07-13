@@ -17,7 +17,6 @@ services:
       - '14567:14567'
     networks:
       - haproxy
-    command: haproxy -f /usr/local/etc/haproxy/haproxy.cfg
     depends_on:
       - tor-1
       - tor-2
