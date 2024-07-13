@@ -4,7 +4,7 @@ services:
   mongos:
     extends:
       file: docker-compose.yml
-      service: mongo
+      service: mongodb
     container_name: mongos
     command: mongos --config /etc/mongod.conf
     entrypoint: ["bash", "/docker-entrypoint.sh"]

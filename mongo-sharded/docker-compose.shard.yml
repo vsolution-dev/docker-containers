@@ -4,7 +4,7 @@ services:
   shard:
     extends:
       file: docker-compose.yml
-      service: mongo
+      service: mongodb
     command: mongod --replSet shard --config /etc/mongod.conf
     volumes:
       - ./conf.d/mongod.shard.conf:/etc/mongod.conf

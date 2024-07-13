@@ -1,8 +1,8 @@
 version: '3.8'
 
 networks:
-  mongo:
-    name: mongo
+  mongodb:
+    name: mongodb
     driver: bridge
 
 volumes:
@@ -14,11 +14,11 @@ volumes:
   config-3: { name: config-3 }
 
 services:
-  mongo:
+  mongodb:
     image: mongo:latest
     restart: always
     networks:
-      - mongo
+      - mongodb
     healthcheck:
       test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
       interval: 10s

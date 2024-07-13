@@ -5,7 +5,7 @@ services:
   config:
     extends:
       file: docker-compose.yml
-      service: mongo
+      service: mongodb
     command: mongod --replSet config --config /etc/mongod.conf
     volumes:
       - ./conf.d/mongod.config.conf:/etc/mongod.conf
