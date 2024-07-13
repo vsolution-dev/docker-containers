@@ -1,0 +1,41 @@
+telemetry.enabled: false
+
+server:
+  host: 0.0.0.0
+
+elasticsearch:
+  hosts:
+    - ${ELASTICSEARCH_HOST}
+  username: kibana_system
+  password: ${KIBANA_PASSWORD}
+
+xpack.security:
+  authc.providers:
+    basic.basic1:
+      order: 0
+    anonymous.anonymous1:
+      order: 1
+      credentials:
+        username: ${ANONYMOUS_USERNAME}
+        password: ${ANONYMOUS_PASSWORD}
+
+xpack.fleet:
+  packages:
+    - name: apm
+      version: latest
+  agentPolicies:
+    - name: Fleet Server Policy
+      id: fleet-server-policy
+      monitoring_enabled:
+        - logs
+        - metrics
+      package_policies:
+        - name: apm
+          package.name: apm
+          inputs:
+            - type: apm
+              vars:
+                - name: host
+                  value: ${APM_SERVER_HOST}
+                - name: url
+                  value: ${APM_SERVER_URL}

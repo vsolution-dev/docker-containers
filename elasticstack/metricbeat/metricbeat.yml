@@ -1,0 +1,35 @@
+metricbeat.max_start_delay: 10s
+
+metricbeat.modules:
+
+  # https://www.elastic.co/guide/en/beats/metricbeat/current/metricbeat-module-system.html
+  - module: system
+    enabled: ${METRICBEAT_SYSTEM_ENABLED:true}
+    metricsets:
+      - cpu
+      - memory
+      - filesystem
+    period: 10s
+    cpu.metrics:
+      - percentages
+      - normalized_percentages
+    core.metrics:
+      - percentages
+
+  # https://www.elastic.co/guide/en/beats/metricbeat/current/metricbeat-module-docker.html
+  - module: docker
+    enabled: ${METRICBEAT_DOCKER_ENABLED:true}
+    metricsets:
+      - container
+      - cpu
+      - info
+      - memory
+    hosts:
+      - "unix:///var/run/docker.sock"
+    period: 10s
+
+output.elasticsearch:
+  hosts:
+    - ${ELASTICSEARCH_HOST}
+  username: elastic
+  password: ${ELASTIC_PASSWORD}

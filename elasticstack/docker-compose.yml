@@ -1,0 +1,121 @@
+version: '3.9'
+
+volumes:
+  elasticsearch:
+    name: elasticsearch
+    driver: local
+
+services:
+  bootstrap:
+    build:
+      context: ./bootstrap
+    container_name: bootstrap
+    image: bootstrap
+    network_mode: host
+    environment:
+      - ELASTICSEARCH_HOST
+      - ELASTIC_PASSWORD
+      - KIBANA_HOST
+      - KIBANA_PASSWORD
+      - ANONYMOUS_USERNAME
+      - ANONYMOUS_PASSWORD
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:${ELASTIC_VERSION}
+    container_name: elasticsearch
+    network_mode: host
+    restart: always
+    environment:
+      - ELASTIC_PASSWORD
+      - discovery.type=single-node
+      - node.name=elasticsearch
+      - "ES_JAVA_OPTS=-Xms8G -Xmx8G"
+    volumes:
+      - ./elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+      - elasticsearch:/usr/share/elasticsearch/data
+    depends_on:
+      bootstrap:
+        condition: service_started
+    healthcheck:
+      test: ["CMD-SHELL", "curl -u elastic:$${ELASTIC_PASSWORD} -f http://localhost:9200 || exit 1"]
+      interval: 5s
+      timeout: 3s
+      start_period: 30s
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:${ELASTIC_VERSION}
+    container_name: kibana
+    network_mode: host
+    restart: always
+    volumes:
+      - ./kibana/kibana.yml:/usr/share/kibana/config/kibana.yml
+    environment:
+      - KIBANA_PASSWORD
+      - ELASTICSEARCH_HOST
+      - ELASTIC_PASSWORD
+      - APM_SERVER_HOST
+      - APM_SERVER_URL
+      - ANONYMOUS_USERNAME
+      - ANONYMOUS_PASSWORD
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -u elastic:$${ELASTIC_PASSWORD} -f http://localhost:5601 || exit 1"]
+      interval: 5s
+      timeout: 3s
+      start_period: 30s
+
+  metricbeat:
+    image: docker.elastic.co/beats/metricbeat:${ELASTIC_VERSION}
+    container_name: metricbeat
+    network_mode: host
+    restart: always
+    user: root
+    command: metricbeat -e -strict.perms=false
+    volumes:
+      - /:/hostfs:ro
+      - /proc:/hostfs/proc:ro
+      - /sys/fs/cgroup:/hostfs/sys/fs/cgroup:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./metricbeat/metricbeat.yml:/usr/share/metricbeat/metricbeat.yml
+    environment:
+      - SQL_HOST
+      - REDIS_HOST
+      - HAPROXY_HOST
+      - ELASTICSEARCH_HOST
+      - ELASTIC_PASSWORD
+    healthcheck:
+      test: ["CMD-SHELL", "metricbeat test output -strict.perms=false || exit 1"]
+      interval: 5s
+      timeout: 3s
+      start_period: 30s
+
+  apm-server:
+    image: docker.elastic.co/apm/apm-server:${ELASTIC_VERSION}
+    container_name: apm-server
+    network_mode: host
+    restart: always
+    user: root
+    volumes:
+      - ./apm-server/apm-server.yml:/usr/share/apm-server/apm-server.yml
+    environment:
+      - ELASTICSEARCH_HOST
+      - ELASTIC_PASSWORD
+      - KIBANA_HOST
+      - KIBANA_PASSWORD
+    depends_on:
+      kibana:
+        condition: service_healthy
+
+  opentelemetry:
+    image: otel/opentelemetry-collector-contrib
+    container_name: opentelemetry
+    restart: always
+    ports:
+      - "4317:4317"
+    volumes:
+      - ./opentelemetry/otel-collector-config.yaml:/etc/otel-collector-config.yaml
+    environment:
+      - APM_SERVER_HOST
+    command: [ "--config=/etc/otel-collector-config.yaml" ]
