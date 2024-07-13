@@ -1,0 +1,27 @@
+version: '3.8'
+
+networks:
+  mongo:
+    name: mongo
+    driver: bridge
+
+volumes:
+  shard-1:  { name: shard-1 }
+  shard-2:  { name: shard-2 }
+  shard-3:  { name: shard-3 }
+  config-1: { name: config-1 }
+  config-2: { name: config-2 }
+  config-3: { name: config-3 }
+
+services:
+  mongo:
+    image: mongo:latest
+    restart: always
+    networks:
+      - mongo
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
