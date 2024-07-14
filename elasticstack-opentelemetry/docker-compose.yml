@@ -104,11 +104,10 @@ services:
   opentelemetry:
     image: otel/opentelemetry-collector-contrib
     container_name: opentelemetry
+    network_mode: host
     restart: always
-    ports:
-      - "4317:4317"
-    volumes:
-      - ./opentelemetry/otel-collector-config.yaml:/etc/otel-collector-config.yaml
     environment:
       - APM_SERVER_HOST
     command: [ "--config=/etc/otel-collector-config.yaml" ]
+    volumes:
+      - ./opentelemetry/otel-collector-config.yaml:/etc/otel-collector-config.yaml
