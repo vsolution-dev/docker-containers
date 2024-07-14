@@ -1,34 +1,28 @@
 #!/bin/bash
 set -e
 
-source ./scripts/kibana.sh
-source ./scripts/elasticsearch.sh
+function wait_for_elasticsearch {
+  until curl -s "${ELASTICSEARCH_HOST}" | grep -q "missing authentication credentials"; do
+    echo "Waiting for Elasticsearch to start..."
+    sleep 1
+  done
+  echo "Elasticsearch is up and running"
+}
+
+function change_password {
+	local username=$1
+	local password=$2
+
+  local response=$(curl -s \
+    -X POST \
+    -H "Content-Type: application/json" \
+    -u "elastic:${ELASTIC_PASSWORD}" \
+    "${ELASTICSEARCH_HOST}/_security/user/${username}/_password" \
+    -d "{\"password\":\"${password}\"}")
+
+  echo "Changing password for user ${username}: ${response}"
+}
 
 wait_for_elasticsearch
 
-# kibana_system 사용자 비밀번호 변경
-
 change_password "kibana_system" "${KIBANA_PASSWORD}"
-
-# anonymous 사용자 권한 및 생성
-
-create_role "anonymous" '{
-  "cluster": [],
-  "indices": [{
-    "names": ["*"],
-    "privileges": ["read"]
-  }],
-  "applications": [{
-    "application": "kibana-.kibana",
-    "privileges": ["feature_visualize.all","feature_dashboard.read","feature_dashboard.url_create"],
-    "resources": ["*"]
-  }]
-}'
-
-create_user "${ANONYMOUS_USERNAME}" "${ANONYMOUS_PASSWORD}" "anonymous"
-
-# Saved objects 가져오기
-
-wait_for_kibana
-
-import_saved_objects "/usr/share/kibana/saved_objects.ndjson"

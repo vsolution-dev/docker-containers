@@ -9,16 +9,6 @@ elasticsearch:
   username: kibana_system
   password: ${KIBANA_PASSWORD}
 
-xpack.security:
-  authc.providers:
-    basic.basic1:
-      order: 0
-    anonymous.anonymous1:
-      order: 1
-      credentials:
-        username: ${ANONYMOUS_USERNAME}
-        password: ${ANONYMOUS_PASSWORD}
-
 xpack.fleet:
   packages:
     - name: apm

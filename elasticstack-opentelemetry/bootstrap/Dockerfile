@@ -5,6 +5,6 @@ RUN apk add --no-cache \
     bash
 
 COPY . .
-RUN chmod +x *.sh
+RUN chmod +x ./docker-entrypoint.sh
 
 ENTRYPOINT ["./docker-entrypoint.sh"]
