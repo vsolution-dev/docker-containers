@@ -252,8 +252,8 @@ ControlPort 0.0.0.0:9051
 # ZAMBIA                                {ZM}
 # ZIMBABWE                              {ZW}
 
-ExitNodes {SG},{KR},{TW},{JP},{HK},{MO},{CN}
-EntryNodes {SG},{KR},{TW},{JP},{HK},{MO},{CN}
+ExitNodes {NL},{KR},{TW},{JP}
+EntryNodes {NL},{KR},{TW},{JP}
 
 AllowSingleHopExits 1
 StrictNodes 1
