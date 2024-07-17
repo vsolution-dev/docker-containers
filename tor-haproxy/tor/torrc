@@ -255,8 +255,9 @@ ControlPort 0.0.0.0:9051
 ExitNodes {NL},{KR},{TW},{JP}
 EntryNodes {NL},{KR},{TW},{JP}
 
-AllowSingleHopExits 1
-StrictNodes 1
 CircuitBuildTimeout 5
-NumEntryGuards 1
-MaxCircuitDirtiness 3600
+
+StrictNodes 1
+
+NewCircuitPeriod 600
+MaxCircuitDirtiness 600
