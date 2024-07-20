@@ -9,5 +9,5 @@ mongodb://homestead:homestead@localhost:27017/public?authSource=admin&directConn
 ## 실행
 
 ```shell
-docker-compose -f docker-compose.yml up -d mongos
+docker compose -f docker-compose.yml up -d mongos
 ```
