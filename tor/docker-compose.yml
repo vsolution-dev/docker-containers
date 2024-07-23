@@ -19,14 +19,6 @@ services:
       - INSTANCES=3
       - EXIT_NODES={NL}
 
-  # 독일
-  tor-de:
-    extends:
-      service: tor-nl
-    container_name: tor-de
-    environment:
-      - EXIT_NODES={DE}
-
   # 타이완
   tor-tw:
     extends:
@@ -48,6 +40,7 @@ services:
     container_name: tor
     ports:
       - "9050:9050"
+      - "8050:8050"
       - "14567:14567"
     volumes:
       - ./haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg
@@ -56,5 +49,4 @@ services:
     depends_on:
       - tor-tw
       - tor-nl
-      - tor-de
       - tor-jp
