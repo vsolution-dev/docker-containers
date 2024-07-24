@@ -6,34 +6,36 @@ networks:
     driver: bridge
 
 services:
-  # 네덜란드
-  tor-nl:
+  tor-1:
     build:
       context: ./tor
     image: tor
-    container_name: tor-nl
+    container_name: tor-1
     restart: always
     networks:
       - tor
     environment:
       - INSTANCES=3
-      - EXIT_NODES={NL}
 
-  # 타이완
-  tor-tw:
+  tor-2:
     extends:
-      service: tor-nl
-    container_name: tor-tw
-    environment:
-      - EXIT_NODES={TW}
+      service: tor-1
+    container_name: tor-2
 
-  # 일본
-  tor-jp:
+  tor-3:
     extends:
-      service: tor-nl
-    container_name: tor-jp
-    environment:
-      - EXIT_NODES={JP}
+      service: tor-1
+    container_name: tor-3
+
+  tor-4:
+    extends:
+      service: tor-1
+    container_name: tor-4
+
+  tor-5:
+    extends:
+      service: tor-1
+    container_name: tor-5
 
   tor:
     image: haproxy:latest
@@ -47,6 +49,8 @@ services:
     networks:
       - tor
     depends_on:
-      - tor-tw
-      - tor-nl
-      - tor-jp
+      - tor-1
+      - tor-2
+      - tor-3
+      - tor-4
+      - tor-5
