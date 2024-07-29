@@ -12,6 +12,7 @@ CircuitBuildTimeout 5
 
 StrictNodes 1
 
+# 제외: {US},{NL},{DE}
 ExitNodes {CH},{DK},{NO},{SE},{FI},{RO},{FR},{ES},{UK},{IE}
 ExitNodes {SG},{JP},{KR},{HK},{TW}
 ExitNodes {CA}
