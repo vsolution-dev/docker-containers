@@ -12,13 +12,13 @@ CircuitBuildTimeout 5
 
 StrictNodes 1
 
-# 제외: {US},{NL},{DE}
-ExitNodes {CH},{DK},{NO},{SE},{FI},{RO},{ES},{UK},{IE}
+# 제외: {US},{NL},{DE},{FR},{MD},{RO}
+ExitNodes {CH},{DK},{NO},{SE},{FI},{FR},{ES},{UK},{IE}
 ExitNodes {SG},{JP},{KR},{HK},{TW}
 ExitNodes {CA}
 ExitNodes {AU},{NZ}
 ExitNodes {AE},{QA},{IL}
-ExitNodes {TH},{VN},{BG},{LV},{EE},{IS},{MD}
+ExitNodes {TH},{VN},{BG},{LV},{EE},{IS}
 
 NewCircuitPeriod 300
 MaxCircuitDirtiness 300
