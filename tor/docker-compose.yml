@@ -14,7 +14,8 @@ services:
     restart: always
     networks:
       - tor
-    environment:
+    environment: # 제외: {US},{NL},{DE},{FR},{MD},{RO},{DK},{SE},{NO},{IS},{CH}
+      - EXIT_NODES
       - INSTANCES=3
 
   tor-2:
