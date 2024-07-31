@@ -1,9 +1,6 @@
 #!/bin/sh
 
-if [ "$1" = "--clean" ]; then
-  docker compose -f .docker/docker-compose.yml down --rmi all -v
-else
-  docker compose -f .docker/docker-compose.yml down
-fi
+docker stack rm tor
+docker-compose build --no-cache
 
-docker compose -f .docker/docker-compose.yml up -d
+docker stack deploy -c docker-compose.yml tor

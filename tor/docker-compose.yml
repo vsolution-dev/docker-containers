@@ -3,55 +3,44 @@ version: '3.9'
 networks:
   tor:
     name: tor
-    driver: bridge
+    driver: overlay
+
+configs:
+  haproxy:
+    file: ./haproxy.cfg
 
 services:
-  tor-1:
-    build:
-      context: ./tor
-    image: tor
-    container_name: tor-1
-    restart: always
-    networks:
-      - tor
-    environment: # 제외: {US},{NL},{DE},{FR},{MD},{RO},{DK},{SE},{NO},{IS},{CH}
-      - EXIT_NODES
-      - INSTANCES=3
-
-  tor-2:
-    extends:
-      service: tor-1
-    container_name: tor-2
-
-  tor-3:
-    extends:
-      service: tor-1
-    container_name: tor-3
-
-  tor-4:
-    extends:
-      service: tor-1
-    container_name: tor-4
-
-  tor-5:
-    extends:
-      service: tor-1
-    container_name: tor-5
-
-  tor:
+  haproxy:
     image: haproxy:latest
-    container_name: tor
     ports:
-      - "9050:9050"
       - "8050:8050"
       - "14567:14567"
-    volumes:
-      - ./haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg
+    configs:
+      - source: haproxy
+        target: /usr/local/etc/haproxy/haproxy.cfg
     networks:
       - tor
+    deploy:
+      placement:
+        constraints:
+          - node.role == manager
     depends_on:
-      - tor-1
-      - tor-2
-      - tor-3
-      - tor-4
-      - tor-5
+      - tor
+
+  tor:
+    build:
+      context: ./tor
+      dockerfile: Dockerfile
+    image: tor:latest
+    networks:
+      - tor
+    environment:
+      - EXIT_NODES
+    deploy:
+      replicas: 8
+      update_config:
+        parallelism: 2
+        delay: 10s
+        failure_action: rollback
+      restart_policy:
+        condition: on-failure

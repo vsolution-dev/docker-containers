@@ -1,12 +1,9 @@
 #!/bin/bash
 set -e
 
-for INSTANCE in $(seq 0 $((INSTANCES-1))); do
-    cat > /etc/tor/torrc-${INSTANCE} << EOF
-DataDirectory /var/lib/tor-${INSTANCE}
-
-SocksPort 0.0.0.0:$((9050 + INSTANCE))
-HTTPTunnelPort 0.0.0.0:$((8050 + INSTANCE))
+cat > /etc/tor/torrc << EOF
+SocksPort 0.0.0.0:9050
+HTTPTunnelPort 0.0.0.0:8050
 
 CircuitBuildTimeout 5
 
@@ -16,8 +13,6 @@ ExitNodes ${EXIT_NODES}
 
 NewCircuitPeriod 300
 MaxCircuitDirtiness 300
-
 EOF
-done
 
 exec "$@"
