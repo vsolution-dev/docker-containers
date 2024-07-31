@@ -1,4 +1,4 @@
 #!/bin/sh
 
-docker compose down --rmi all -v
+docker compose down
 docker compose up -d
