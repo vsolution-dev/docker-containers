@@ -25,6 +25,7 @@ services:
     image: haproxy:latest
     ports:
       - "8050:8050"
+      - "8051:8051"
       - "14567:14567"
     volumes:
       - ./haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg
