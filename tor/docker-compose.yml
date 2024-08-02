@@ -1,13 +1,24 @@
 version: '3.9'
 
 networks:
-  tor:
-    name: tor
+  haproxy:
+    name: haproxy
     driver: overlay
 
-configs:
-  haproxy:
-    file: ./haproxy.cfg
+x-tor: &tor
+  build:
+    context: ./tor
+  image: tor:latest
+  networks:
+    - haproxy
+  deploy:
+    replicas: 8
+    update_config:
+      parallelism: 2
+      delay: 10s
+      failure_action: rollback
+    restart_policy:
+      condition: on-failure
 
 services:
   haproxy:
@@ -15,32 +26,23 @@ services:
     ports:
       - "8050:8050"
       - "14567:14567"
-    configs:
-      - source: haproxy
-        target: /usr/local/etc/haproxy/haproxy.cfg
+    volumes:
+      - ./haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg
     networks:
-      - tor
+      - haproxy
+    depends_on:
+      - amazon
+      - naver
     deploy:
       placement:
-        constraints:
-          - node.role == manager
-    depends_on:
-      - tor
+        constraints: [ node.role == manager ]
 
-  tor:
-    build:
-      context: ./tor
-      dockerfile: Dockerfile
-    image: tor:latest
-    networks:
-      - tor
+  amazon:
+    << : *tor
     environment:
-      - EXIT_NODES
-    deploy:
-      replicas: 8
-      update_config:
-        parallelism: 2
-        delay: 10s
-        failure_action: rollback
-      restart_policy:
-        condition: on-failure
+      EXIT_NODES: "{FI},{ES},{UK},{IE},{SG},{JP},{KR},{HK},{TW},{CA},{AU},{NZ},{AE},{QA},{IL},{TH},{VN},{BG},{LV},{EE}"
+
+  naver:
+    << : *tor
+    environment:
+      EXIT_NODES: "{JP},{KR}"
