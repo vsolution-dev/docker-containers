@@ -41,7 +41,7 @@ services:
   amazon:
     << : *tor
     environment:
-      EXIT_NODES: "{FI},{ES},{UK},{IE},{SG},{JP},{KR},{HK},{TW},{CA},{AU},{NZ},{AE},{QA},{IL},{TH},{VN},{BG},{LV},{EE}"
+      EXIT_NODES: "{FI},{ES},{UK},{IE},{SG},{JP},{KR},{HK},{TW},{AU},{NZ},{AE},{QA},{IL},{TH},{VN},{BG},{LV},{EE}"
 
   naver:
     << : *tor
