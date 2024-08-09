@@ -2,6 +2,8 @@ services:
   android:
     build:
       context: .
+    devices:
+      - /dev/kvm:/dev/kvm
     tty: true
     stdin_open: true
     ports:
