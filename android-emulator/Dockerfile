@@ -48,9 +48,9 @@ RUN sdkmanager --verbose "platforms;android-${API_LEVEL}"
 RUN sdkmanager --verbose "platform-tools"
 RUN sdkmanager --verbose "emulator"
 
-COPY docker-entrypoint.sh $ANDROID_HOME
-RUN chmod +x $ANDROID_HOME/docker-entrypoint.sh
-ENTRYPOINT ["${ANDROID_HOME}/docker-entrypoint.sh"]
+COPY docker-entrypoint.sh /opt/android/docker-entrypoint.sh
+RUN chmod +x /opt/android/docker-entrypoint.sh
+ENTRYPOINT ["/opt/android/docker-entrypoint.sh"]
 
 EXPOSE 5554 5555
 
