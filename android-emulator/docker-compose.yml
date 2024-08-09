@@ -1,0 +1,9 @@
+services:
+  android:
+    build:
+      context: .
+    tty: true
+    stdin_open: true
+    ports:
+      - "5554:5554"
+      - "5555:5555"
