@@ -2,6 +2,7 @@ services:
   android:
     build:
       context: .
+    platform: linux/amd64
     devices:
       - /dev/kvm:/dev/kvm
     tty: true
